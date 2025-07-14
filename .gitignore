@@ -1,0 +1,56 @@
+# Laravel general
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+composer.lock
+
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+public/hot
+/public/build
+
+# Alternative public directory
+public_html/storage
+public_html/hot
+
+# Test / coverage
+coverage/
+
+# IDE and editor files
+.vscode
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
+.phpactor.json
+
+# Docker / system files
+.docker
+docker-compose.override.yml
+*.log
+*.pid
+*.sock
+
+# Temporary / developer files
+.DS_Store
+Thumbs.db
+*.swo
+*.swp
+*.bak
+*.tmp
+npm-debug.log
+yarn-error.log
+auth.json
+
+# Virtual machine / Vagrant
+/.vagrant
+
+# Project specific (if any)
+/storage/pail

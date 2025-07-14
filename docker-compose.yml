@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: laravel_app
+        volumes:
+            - ./:/var/www/html
+        working_dir: /var/www/html
+        depends_on:
+            - db
+        networks:
+            - laravel_network
+        command: php artisan serve --host=0.0.0.0 --port=8000
+        ports:
+            - "8000:8000"
+
+    db:
+        image: postgres:15
+        container_name: laravel_postgres
+        environment:
+            POSTGRES_DB: LaravelDB
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: laravel321
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        networks:
+            - laravel_network
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: laravel_pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+        ports:
+            - "5050:80"
+        depends_on:
+            - db
+        networks:
+            - laravel_network
+
+networks:
+    laravel_network:
+        driver: bridge
+
+volumes:
+    pgdata:
