@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'iPhone 14 Pro',
                 'price' => 62999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/iphone-akilli-telefon-ekran-elektronik-cihaz-11216260/',
+                'img' => 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=400&q=80',
                 'category_id' => 1,
                 'description' => 'Apple iPhone 14 Pro 128GB',
                 'stock' => 50
@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Samsung Galaxy S23',
                 'price' => 39999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/kahverengi-ahsap-tablke-ustunde-siyah-samsung-android-akilli-telefon-214487/',
+                'img' => 'https://images.pexels.com/photos/214487/pexels-photo-214487.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 1,
                 'description' => 'Samsung Galaxy S23 256GB',
                 'stock' => 30
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Nintendo Switch',
                 'price' => 9999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/isik-parlak-acik-hafif-6654174/',
+                'img' => 'https://images.pexels.com/photos/6654174/pexels-photo-6654174.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Nintendo Switch Oyun Konsolu',
                 'stock' => 25
@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'MacBook Air M2',
                 'price' => 44999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/dizustu-bilgisayar-model-tam-boy-maket-metin-alani-8534039/',
+                'img' => 'https://images.pexels.com/photos/8534039/pexels-photo-8534039.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 2,
                 'description' => 'Apple MacBook Air M2 512GB',
                 'stock' => 20
@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Dell XPS 13',
                 'price' => 38999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/dizustu-bilgisayar-bag-baglanti-bilgisayar-6053287/',
+                'img' => 'https://images.pexels.com/photos/6053287/pexels-photo-6053287.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 2,
                 'description' => 'Dell XPS 13 Intel i7 16GB RAM',
                 'stock' => 15
@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'iPad Pro 12.9"',
                 'price' => 34999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/apple-elma-kamera-ipad-13570174/',
+                'img' => 'https://images.pexels.com/photos/13570174/pexels-photo-13570174.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 3,
                 'description' => 'iPad Pro 12.9" M2 256GB',
                 'stock' => 18
@@ -87,7 +87,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Samsung Galaxy Tab S9',
                 'price' => 22999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/el-ipad-resim-fotograf-9866878/',
+                'img' => 'https://images.pexels.com/photos/9866878/pexels-photo-9866878.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 3,
                 'description' => 'Galaxy Tab S9 Ultra AMOLED',
                 'stock' => 22
@@ -103,7 +103,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Logitech MX Master 3',
                 'price' => 2999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/isik-parlak-acik-hafif-7006951/',
+                'img' => 'https://images.pexels.com/photos/7006951/pexels-photo-7006951.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Kablosuz Mouse - Logitech MX Master 3',
                 'stock' => 40
@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Sony WH-1000XM5',
                 'price' => 7999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/lenssiz-bir-kamera-govdesi-7789079/',
+                'img' => 'https://images.pexels.com/photos/7789079/pexels-photo-7789079.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Sony Gürültü Engelleyici Bluetooth Kulaklık',
                 'stock' => 35
@@ -119,7 +119,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'iPhone 13',
                 'price' => 42999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/apple-aygitlarinin-sevgisini-kucaklamak-i-phone-ile-bir-yolculuk-16642986/',
+                'img' => 'https://images.pexels.com/photos/16642986/pexels-photo-16642986.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 1,
                 'description' => 'Apple iPhone 13 128GB',
                 'stock' => 40
@@ -127,7 +127,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Asus ROG Strix G15',
                 'price' => 52999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/yari-acilmis-dizustu-bilgisayar-masada-acik-2047905/',
+                'img' => 'https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 2,
                 'description' => 'Asus ROG Strix G15 Gaming Laptop',
                 'stock' => 10
@@ -135,7 +135,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Lenovo ThinkPad X1 Carbon',
                 'price' => 41999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/ahsap-masada-dizustu-bilgisayar-kullanan-kisinin-ustten-gorunumu-32284386/',
+                'img' => 'https://images.pexels.com/photos/32284386/pexels-photo-32284386.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 2,
                 'description' => 'Lenovo ThinkPad X1 Carbon i7',
                 'stock' => 13
@@ -151,7 +151,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Samsung Galaxy Watch 6',
                 'price' => 6499.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/islak-damlaciklar-apple-watch-akilli-saat-13598511/',
+                'img' => 'https://images.pexels.com/photos/13598511/pexels-photo-13598511.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Samsung Akıllı Saat - Watch 6',
                 'stock' => 45
@@ -159,7 +159,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'iPad Air 5',
                 'price' => 28999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/apple-elma-kamera-ipad-13570174/',
+                'img' => 'https://images.pexels.com/photos/13570174/pexels-photo-13570174.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 3,
                 'description' => 'Apple iPad Air 5. Nesil 256GB',
                 'stock' => 27
@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'HP Spectre x360',
                 'price' => 38999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/adam-kisi-eller-akilli-telefon-4084293/',
+                'img' => 'https://images.pexels.com/photos/4084293/pexels-photo-4084293.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 2,
                 'description' => 'HP Spectre x360 Dönüştürülebilir Laptop',
                 'stock' => 14
@@ -175,7 +175,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Xiaomi Pad 6',
                 'price' => 11999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/kadin-sanat-yatak-boyama-20554843/',
+                'img' => 'https://images.pexels.com/photos/20554843/pexels-photo-20554843.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 3,
                 'description' => 'Xiaomi Pad 6 128GB',
                 'stock' => 19
@@ -183,7 +183,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'JBL Flip 6 Bluetooth Hoparlör',
                 'price' => 2499.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/siyah-kablosuz-kulaklik-tutan-bir-kisi-9371408/',
+                'img' => 'https://images.pexels.com/photos/9371408/pexels-photo-9371408.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Taşınabilir Bluetooth Hoparlör',
                 'stock' => 50
@@ -191,7 +191,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'OnePlus 11 5G',
                 'price' => 29999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/akilli-telefon-mor-teknoloji-cihaz-20074768/',
+                'img' => 'https://images.pexels.com/photos/20074768/pexels-photo-20074768.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 1,
                 'description' => 'OnePlus 11 5G Snapdragon 8 Gen 2',
                 'stock' => 33
@@ -199,7 +199,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Realme GT 3',
                 'price' => 19999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/dokulu-yuzey-uzerinde-zarif-cep-telefonu-31467202/',
+                'img' => 'https://images.pexels.com/photos/31467202/pexels-photo-31467202.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 1,
                 'description' => 'Realme GT 3 240W Hızlı Şarj',
                 'stock' => 37
@@ -207,7 +207,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Razer BlackShark V2',
                 'price' => 1799.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/tilt-shift-dugmeler-butonlar-aydinlatma-8176505/',
+                'img' => 'https://images.pexels.com/photos/8176505/pexels-photo-8176505.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Razer Oyuncu Kulaklığı - BlackShark V2',
                 'stock' => 48
@@ -215,7 +215,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Google Pixel 7',
                 'price' => 25999.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/akilli-telefon-teknoloji-rock-kaya-18831090/',
+                'img' => 'https://images.pexels.com/photos/18831090/pexels-photo-18831090.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 1,
                 'description' => 'Google Pixel 7 128GB',
                 'stock' => 40
@@ -223,12 +223,11 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Logitech G502 Hero',
                 'price' => 1299.00,
-                'img' => 'https://www.pexels.com/tr-tr/fotograf/karanlik-koyu-dugmeler-butonlar-13870515/',
+                'img' => 'https://images.pexels.com/photos/13870515/pexels-photo-13870515.jpeg?auto=compress&cs=tinysrgb&h=400&w=400',
                 'category_id' => 4,
                 'description' => 'Logitech G502 Hero Kablosuz Oyuncu Mouse',
                 'stock' => 60
             ]
-
         ];
 
         foreach ($products as $product) {

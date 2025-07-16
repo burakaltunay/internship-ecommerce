@@ -4,275 +4,460 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>TechShop - Ana Sayfa</title>
+    <title>TechShop - Teknolojinin Kalbi</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            background-color: #f5f5f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            color: #333;
+            overflow-x: hidden;
         }
 
+        /* Header Styles */
         header {
-            background-color: white;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 80px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .logo {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
+            font-size: 28px;
+            font-weight: 800;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: "⚡";
+            font-size: 32px;
+            animation: pulse 2s ease-in-out infinite;
         }
 
         .logo span {
-            color: #e74c3c;
+            background: linear-gradient(45deg, #2563eb, #1d4ed8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .auth-btn {
-            background-color: #e74c3c;
+            background: #2563eb;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
+        .auth-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
         .hero {
             text-align: center;
-            padding: 60px 20px;
+            padding: 150px 20px 80px;
+            background: #2563eb;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
         }
 
         .hero h1 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            color: #333;
+            font-size: 48px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .hero p {
-            color: #666;
-            margin-bottom: 25px;
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
 
-        .cta-btn {
-            background-color: #e74c3c;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 4px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
+        /* Categories */
         .categories {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            padding: 30px;
-            flex-wrap: wrap;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
         }
 
         .category {
-            background-color: white;
-            padding: 20px;
-            width: 150px;
+            background: white;
+            padding: 30px 20px;
             text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            border: 2px solid #e5e7eb;
+            position: relative;
+            overflow: hidden;
         }
 
         .category:hover {
-            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            border-color: #2563eb;
         }
 
         .category.active {
-            background-color: #e74c3c;
+            background: #2563eb;
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
+            border-color: #2563eb;
         }
 
+        .category h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Product Container */
         .product-list-container {
-            background-color: white;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 900px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
         }
 
         .controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .filter-controls {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
         }
 
         .clear-filter {
-            background-color: #6c757d;
+            background: #6b7280;
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filter:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        #categoryTitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2563eb;
         }
 
         #itemsPerPage {
-            padding: 5px 10px;
+            padding: 10px 15px;
             font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             cursor: pointer;
+            background: white;
+            transition: all 0.3s ease;
         }
 
+        #itemsPerPage:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        /* Product Grid */
         .product-list {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            padding-bottom: 10px;
-            overflow: hidden;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 30px;
+            padding-bottom: 20px;
         }
 
         .product-card {
-            background-color: #fafafa;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #f3f4f6;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+            border-color: #2563eb;
         }
 
         .product-card img {
             width: 100%;
-            height: 150px;
+            height: 180px;
             object-fit: contain;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.03);
         }
 
         .product-name {
-            font-weight: bold;
+            font-weight: 600;
             font-size: 16px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             text-align: center;
             color: #333;
+            line-height: 1.4;
         }
 
         .product-price {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-bottom: 10px;
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
 
         .counter {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
 
         .counter button {
-            background-color: #e74c3c;
+            background: #2563eb;
             border: none;
             color: white;
-            padding: 5px 12px;
-            font-size: 18px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 16px;
+            border-radius: 6px;
             cursor: pointer;
-            user-select: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .counter button:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
         }
 
         .counter input {
-            width: 40px;
+            width: 50px;
             text-align: center;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 4px;
+            font-weight: 600;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px;
+            background: white;
+            transition: border-color 0.3s ease;
         }
 
+        .counter input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        /* Pagination */
         .pagination {
-            margin-top: 20px;
+            margin-top: 40px;
             text-align: center;
-            user-select: none;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .pagination button {
-            background-color: white;
-            border: 1px solid #e74c3c;
-            color: #e74c3c;
-            padding: 6px 12px;
-            margin: 0 5px;
-            border-radius: 4px;
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 12px 18px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            min-width: 40px;
+            font-weight: 600;
+            min-width: 50px;
+            transition: all 0.3s ease;
         }
 
         .pagination button.active,
         .pagination button:hover {
-            background-color: #e74c3c;
+            background: #2563eb;
             color: white;
+            border-color: #2563eb;
         }
 
-        .no-products {
+        /* Status Messages */
+        .loading, .error, .no-products {
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 60px 20px;
             font-size: 18px;
+            font-weight: 500;
+            grid-column: 1 / -1;
         }
 
         .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
+            color: #2563eb;
         }
 
         .error {
-            text-align: center;
-            padding: 40px;
-            color: #e74c3c;
+            color: #dc2626;
         }
 
+        .no-products {
+            color: #6b7280;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .product-list {
-                grid-template-columns: repeat(2, 1fr);
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .categories {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+                padding: 40px 15px;
+            }
+
+            .product-list-container {
+                margin: 20px 15px;
+                padding: 25px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-controls {
+                justify-content: center;
+            }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .pagination button {
+                padding: 10px 14px;
+                min-width: 40px;
             }
         }
 
         @media (max-width: 480px) {
-            .product-list {
-                grid-template-columns: 1fr;
+            .hero {
+                padding: 120px 15px 60px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .auth-btn {
+                padding: 10px 20px;
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
 <header>
-    <div class="logo">Tech<span>Shop</span></div>
+    <div class="logo" onclick="window.location.href='/'">Tech<span>Shop</span></div>
     <button class="auth-btn" onclick="window.location.href='{{ route('web.login.form') }}'">Giriş Yap / Üye Ol</button>
 </header>
 
 <section class="hero">
-    <h1>Teknoloji Ürünlerinin Adresi</h1>
-    <p>En yeni elektronik ürünlerle tanışın</p>
-    <a href="#products" class="cta-btn">Ürünleri Keşfet</a>
+    <h1>Teknolojinin Kalbi</h1>
+    <p>Geleceğin teknolojisiyle bugün tanışın</p>
 </section>
 
 <section class="categories" id="categories">
@@ -336,6 +521,16 @@
         currentPage = 1;
         loadProducts();
         updateCategoryDisplay();
+    });
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        const header = document.querySelector('header');
+        if (window.scrollY > 50) {
+            header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.12)';
+        } else {
+            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.08)';
+        }
     });
 
     // Kategorileri yükle
@@ -433,11 +628,11 @@
             card.className = 'product-card';
 
             card.innerHTML = `
-                <img src="${product.img}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/150x150?text=Resim+Yok'" />
+                <img src="${product.img}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/180x180?text=Resim+Yok'" />
                 <div class="product-name">${product.name}</div>
                 <div class="product-price">${parseFloat(product.price).toLocaleString('tr-TR', {style:'currency', currency:'TRY'})}</div>
                 <div class="counter">
-                    <button aria-label="Azalt" data-id="${product.id}" class="decrement">-</button>
+                    <button aria-label="Azalt" data-id="${product.id}" class="decrement">−</button>
                     <input type="number" min="0" value="0" data-id="${product.id}" class="quantity-input" />
                     <button aria-label="Arttır" data-id="${product.id}" class="increment">+</button>
                 </div>
@@ -453,7 +648,8 @@
     // Counter event listeners
     function setupCounterEvents() {
         document.querySelectorAll('.decrement').forEach(btn => {
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+                e.preventDefault();
                 const id = btn.dataset.id;
                 const input = document.querySelector(`.quantity-input[data-id="${id}"]`);
                 let val = parseInt(input.value) || 0;
@@ -464,7 +660,8 @@
         });
 
         document.querySelectorAll('.increment').forEach(btn => {
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+                e.preventDefault();
                 const id = btn.dataset.id;
                 const input = document.querySelector(`.quantity-input[data-id="${id}"]`);
                 let val = parseInt(input.value) || 0;
@@ -506,7 +703,7 @@
         // Prev button
         if (data.current_page > 1) {
             const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'Önceki';
+            prevBtn.textContent = '← Önceki';
             prevBtn.onclick = () => {
                 currentPage = data.current_page - 1;
                 loadProducts();
@@ -531,7 +728,7 @@
         // Next button
         if (data.current_page < data.last_page) {
             const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Sonraki';
+            nextBtn.textContent = 'Sonraki →';
             nextBtn.onclick = () => {
                 currentPage = data.current_page + 1;
                 loadProducts();
