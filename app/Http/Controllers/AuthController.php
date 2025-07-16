@@ -102,7 +102,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Giriş başarılı!',
-                'redirect' => '/dashboard'
+                'redirect' => '/'
             ]);
 
         } catch (ValidationException $e) {
