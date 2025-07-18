@@ -224,14 +224,21 @@
         }
 
         .copy {
-            background: #6b7280;
-            color: #fff;
-            font-size: 14px;
+            background: transparent;
+            color: #60a5fa;
+            font-size: 13px;
             margin-top: 1em;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5em 0;
+            width: 100%;
         }
 
         .copy:hover {
-            background: #4b5563;
+            text-decoration: underline;
+            color: #3b82f6;
         }
 
         .btn {
@@ -345,7 +352,6 @@
     </div>
 
     <form id="form">
-        @csrf
         <div class="input-wrapper">
             <input type="email" id="email" placeholder="E-posta" required>
         </div>
@@ -372,12 +378,11 @@
     <div id="passBox" class="hidden">
         <p><strong>Şifreniz:</strong></p>
         <div id="generated"></div>
-        <button class="btn copy" id="copy">Şifreyi Kopyala</button>
+        <button class="copy" id="copy">Şifreyi Kopyala</button>
     </div>
 </div>
 
 <script>
-    const csrf = document.querySelector('[name="csrf-token"]').content;
     const loginMode = document.getElementById('loginMode');
     const registerMode = document.getElementById('registerMode');
     const email = document.getElementById('email');
@@ -461,7 +466,7 @@
             const res = await fetch('/ajax/login', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrf,
+                    'X-CSRF-TOKEN': document.querySelector('[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
                 body: formData
@@ -496,7 +501,7 @@
             const res = await fetch('/ajax/register', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrf,
+                    'X-CSRF-TOKEN': document.querySelector('[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
                 body: formData
@@ -533,7 +538,7 @@
 
     function showSpinner(button, textElement, show) {
         if (show) {
-            textElement.innerHTML = '<span class="spinner"></span>Yükleniyor...';
+            textElement.innerHTML = '<span class="spinner"></span>';
             button.disabled = true;
         } else {
             textElement.textContent = isLogin ? 'Giriş Yap' : 'Üye Ol';

@@ -12,16 +12,19 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     // WEB AUTH METHODS
+    // Displays the login form view.
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
+    // Displays the registration form view.
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
+    // Handles web login requests (form submission).
     public function webLogin(Request $request)
     {
         $credentials = $request->validate([
@@ -29,44 +32,53 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        // Attempts to log in the user with provided credentials, including "remember me".
+        if (Auth::attempt($credentials, true)) {
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+            return redirect('/dashboard');
         }
 
+        // Returns with an error if authentication fails.
         return back()->withErrors([
-            'email' => 'Geçersiz kimlik bilgileri.',
+            'email' => 'Invalid credentials.',
         ])->onlyInput('email');
     }
 
+    // Handles web registration requests (form submission).
     public function webRegister(Request $request)
     {
         $request->validate([
             'email' => 'required|email|unique:users',
         ]);
 
+        // Generates a random password for the new user.
         $password = Str::random(12);
 
+        // Creates a new user in the database.
         User::create([
             'email' => $request->email,
             'password' => Hash::make($password),
         ]);
 
+        // Redirects to login with the generated password and a success message.
         return redirect()->route('login')
             ->with('generated_password', $password)
-            ->with('status', 'Kayıt başarılı! Şifreniz: '.$password);
+            ->with('status', 'Registration successful! Your password: '.$password);
     }
 
+    // Handles web logout requests.
     public function webLogout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::logout(); // Logs out the user.
+        $request->session()->invalidate(); // Invalidates the session.
+        $request->session()->put('_token', null); // Clears the CSRF token.
 
-        return redirect('/');
+        return redirect('/'); // Redirects to the homepage.
     }
 
-    // AJAX/JSON METHODS - Frontend JavaScript için
+    // AJAX/JSON METHODS - For Frontend JavaScript
+
+    // Handles AJAX login requests.
     public function login(Request $request)
     {
         try {
@@ -78,47 +90,50 @@ class AuthController extends Controller
             $email = $request->email;
             $password = $request->password;
 
-            // E-mail var mı kontrol et
+            // Checks if a user with the given email exists.
             $user = User::where('email', $email)->first();
 
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Bu e-mail ile kayıtlı kullanıcı bulunamadı. Lütfen üye olun.'
+                    'message' => 'No user found with this email. Please register.'
                 ], 404);
             }
 
-            // Şifre doğru mu kontrol et
+            // Checks if the provided password is correct.
             if (!Hash::check($password, $user->password)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Şifre yanlış!'
+                    'message' => 'Incorrect password!'
                 ], 401);
             }
 
-            // Session'a kaydet (Laravel auth)
+            // Logs in the user via Laravel's authentication system.
             Auth::login($user);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Giriş başarılı!',
-                'redirect' => '/'
+                'message' => 'Login successful!',
+                'redirect' => '/dashboard' // Redirects to the dashboard on success.
             ]);
 
         } catch (ValidationException $e) {
+            // Handles validation errors.
             return response()->json([
                 'success' => false,
-                'message' => 'Geçersiz veri girişi.',
+                'message' => 'Invalid data input.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
 
+    // Handles AJAX registration requests.
     public function register(Request $request)
     {
         try {
@@ -128,20 +143,20 @@ class AuthController extends Controller
 
             $email = $request->email;
 
-            // E-mail var mı kontrol et
+            // Checks if the email is already registered.
             $existingUser = User::where('email', $email)->first();
 
             if ($existingUser) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Bu e-mail adresi zaten kayıtlı!'
+                    'message' => 'This email address is already registered!'
                 ], 400);
             }
 
-            // E-mail yoksa şifre üret (12 karakter olarak standardize edildi)
+            // Generates a random 12-character password.
             $password = Str::random(12);
 
-            // Veritabanına kaydet
+            // Saves the new user to the database.
             User::create([
                 'email' => $email,
                 'password' => Hash::make($password)
@@ -149,25 +164,29 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Şifreniz üretildi, lütfen kopyalayınız.',
+                'message' => 'Your password has been generated, please copy it.',
                 'password' => $password
             ]);
 
         } catch (ValidationException $e) {
+            // Handles validation errors.
             return response()->json([
                 'success' => false,
-                'message' => 'Geçersiz veri girişi.',
+                'message' => 'Invalid data input.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    // API AUTH METHODS - Token tabanlı
+    // API AUTH METHODS - Token-based authentication
+
+    // Handles API registration requests, generating a token.
     public function apiRegister(Request $request)
     {
         try {
@@ -181,6 +200,7 @@ class AuthController extends Controller
                 'password' => Hash::make($password),
             ]);
 
+            // Returns the generated password and a new API token.
             return response()->json([
                 'success' => true,
                 'password' => $password,
@@ -188,19 +208,22 @@ class AuthController extends Controller
             ], 201);
 
         } catch (ValidationException $e) {
+            // Handles validation errors.
             return response()->json([
                 'success' => false,
-                'message' => 'Geçersiz veri girişi.',
+                'message' => 'Invalid data input.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
 
+    // Handles API login requests, returning a token on success.
     public function apiLogin(Request $request)
     {
         try {
@@ -212,57 +235,62 @@ class AuthController extends Controller
             $email = $request->email;
             $password = $request->password;
 
-            // E-mail var mı kontrol et
+            // Checks if a user with the given email exists.
             $user = User::where('email', $email)->first();
 
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Bu e-mail ile kayıtlı kullanıcı bulunamadı. Lütfen üye olun.'
+                    'message' => 'No user found with this email. Please register.'
                 ], 404);
             }
 
-            // Şifre doğru mu kontrol et
+            // Checks if the provided password is correct.
             if (!Hash::check($password, $user->password)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Şifre yanlış!'
+                    'message' => 'Incorrect password!'
                 ], 401);
             }
 
+            // Returns a new API token for the authenticated user.
             return response()->json([
                 'success' => true,
                 'token' => $user->createToken('API Token')->plainTextToken
             ]);
 
         } catch (ValidationException $e) {
+            // Handles validation errors.
             return response()->json([
                 'success' => false,
-                'message' => 'Geçersiz veri girişi.',
+                'message' => 'Invalid data input.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
 
+    // Handles API logout requests by revoking the current access token.
     public function apiLogout(Request $request)
     {
         try {
-            $request->user()->currentAccessToken()->delete();
+            $request->user()->currentAccessToken()->delete(); // Deletes the current API token.
 
             return response()->json([
                 'success' => true,
-                'message' => 'Çıkış yapıldı'
+                'message' => 'Logged out successfully'
             ]);
 
         } catch (\Exception $e) {
+            // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'Bir hata oluştu: ' . $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }

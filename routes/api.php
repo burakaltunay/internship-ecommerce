@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -24,9 +25,20 @@ Route::prefix('v1')->group(function () {
 
     // Protected Routes (Sanctum + custom middleware)
     Route::middleware(['auth:sanctum', 'auth.token'])->group(function () {
+        // Authenticated user routes
         Route::prefix('auth')->group(function () {
             Route::post('/logout', [AuthController::class, 'apiLogout'])->name('api.logout');
             Route::get('/user', [AuthController::class, 'user'])->name('api.user');
+        });
+
+        // 🛒 Cart Routes
+        Route::prefix('cart')->group(function () {
+            Route::get('/', [CartController::class, 'index'])->name('api.cart.index');
+            Route::post('/', [CartController::class, 'add'])->name('api.cart.add');
+            Route::put('/{productId}', [CartController::class, 'update'])->name('api.cart.update');
+            Route::delete('/{productId}', [CartController::class, 'remove'])->name('api.cart.remove');
+            Route::delete('/', [CartController::class, 'clear'])->name('api.cart.clear');
+            Route::post('/checkout', [CartController::class, 'checkout'])->name('api.cart.checkout');
         });
     });
 
