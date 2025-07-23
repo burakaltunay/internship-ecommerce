@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BasketController;
 
 Route::prefix('v1')->group(function () {
     // Public Auth Routes (API)
@@ -22,6 +23,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('api.products.index');
         Route::get('/categories', [ProductController::class, 'categories'])->name('api.products.categories');
     });
+
+    // Public Basket Routes (no authentication required)
+    Route::post('/basket/confirm', [BasketController::class, 'confirm'])->name('api.basket.confirm');
+    Route::get('/basket/{id}', [BasketController::class, 'show'])->name('api.basket.show');
+    Route::post('/basket/{id}/pay', [BasketController::class, 'simulatePayment']);
 
     // Protected Routes (Sanctum + custom middleware)
     Route::middleware(['auth:sanctum', 'auth.token'])->group(function () {

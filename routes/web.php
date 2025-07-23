@@ -3,12 +3,20 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Basket;
+use App\Mail\BasketConfirmed;
 
 
-// Ana sayfa - Public
+// Ana sayfa - Public (Welcome/Dashboard)
 
 Route::get('/', function () {
-    return view('welcome'); // veya ana sayfa view'ınız
+    if (auth()->check()) {
+        $userEmail = auth()->user()->email;
+        return view('dashboard', compact('userEmail'));
+    } else {
+        return view('welcome');
+    }
 })->name('home');
 
 
@@ -47,10 +55,16 @@ Route::prefix('auth')->group(function () {
 
 // Protected Routes - Authenticated Users Only
 Route::middleware(['auth'])->group(function () {
-// Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard'); // Dashboard view'ınız
-    })->name('dashboard');
+
+// Dashboard redirect (eski URL'ler için)
+Route::get('/dashboard', function () {
+    return redirect('/');
+})->name('dashboard');
+
+// Checkout page
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
 
 // Logout
     Route::post('/logout', [AuthController::class, 'webLogout'])->name('web.logout');
@@ -72,4 +86,15 @@ Route::middleware(['guest'])->group(function () {
 // Fallback Route - 404 handler
 Route::fallback(function () {
     return response()->view('errors.404', [], 404);
+});
+
+Route::get('/admin/baskets', [\App\Http\Controllers\Controller::class, 'adminBaskets'])->name('admin.baskets');
+
+Route::get('/test-mail', function () {
+    $basket = Basket::latest()->first();
+    if (!$basket) {
+        return 'Test için sepet bulunamadı.';
+    }
+    Mail::to('eulergauss271@gmail.com')->send(new BasketConfirmed($basket));
+    return 'Test maili gönderildi!';
 });

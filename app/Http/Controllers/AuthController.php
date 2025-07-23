@@ -35,7 +35,13 @@ class AuthController extends Controller
         // Attempts to log in the user with provided credentials, including "remember me".
         if (Auth::attempt($credentials, true)) {
             $request->session()->regenerate();
-            return redirect('/dashboard');
+            
+            // Generate and save authentication token
+            $user = Auth::user();
+            $token = Str::random(60);
+            $user->update(['auth_token' => $token]);
+            
+            return redirect('/');
         }
 
         // Returns with an error if authentication fails.
@@ -48,7 +54,9 @@ class AuthController extends Controller
     public function webRegister(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|unique:users',
+            'email' => ['required', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/', 'unique:users'],
+        ], [
+            'email.regex' => 'Lütfen geçerli bir e-posta adresi girin (ör: a@b.c)'
         ]);
 
         // Generates a random password for the new user.
@@ -69,9 +77,15 @@ class AuthController extends Controller
     // Handles web logout requests.
     public function webLogout(Request $request)
     {
+        // Clear auth token
+        if (Auth::check()) {
+            $user = Auth::user();
+            $user->update(['auth_token' => null]);
+        }
+        
         Auth::logout(); // Logs out the user.
         $request->session()->invalidate(); // Invalidates the session.
-        $request->session()->put('_token', null); // Clears the CSRF token.
+        $request->session()->regenerateToken(); // Regenerates the CSRF token.
 
         return redirect('/'); // Redirects to the homepage.
     }
@@ -138,7 +152,9 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'email' => 'required|email'
+                'email' => ['required', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/'],
+            ], [
+                'email.regex' => 'Lütfen geçerli bir e-posta adresi girin (ör: a@b.c)'
             ]);
 
             $email = $request->email;
@@ -164,7 +180,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Your password has been generated, please copy it.',
+                'message' => 'Şifreniz oluşturuldu, lütfen kopyalayın.',
                 'password' => $password
             ]);
 
@@ -191,7 +207,9 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'email' => 'required|email|unique:users',
+                'email' => ['required', 'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/', 'unique:users'],
+            ], [
+                'email.regex' => 'Lütfen geçerli bir e-posta adresi girin (ör: a@b.c)'
             ]);
 
             $password = Str::random(12);

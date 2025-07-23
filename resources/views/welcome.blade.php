@@ -819,7 +819,7 @@
                 </div>
             </div>
         </div>
-        <button class="auth-btn" onclick="window.location.href='{{ route('web.login.form') }}'">Giriş Yap / Üye Ol</button>
+        <button class="auth-btn" onclick="window.location.href='{{ route('login') }}'">Giriş Yap / Üye Ol</button>
     </div>
 </header>
 
@@ -855,9 +855,7 @@
     <div class="pagination" id="pagination"></div>
 </section>
 
-<div class="success-message" id="successMessage">
-    Ürün sepete eklendi!
-</div>
+
 
 <script>
     // Cart Management Class
@@ -923,7 +921,7 @@
             const currentQuantity = this.cart.get(productId) || 0;
             this.cart.set(productId, currentQuantity + quantity);
             this.updateBadge();
-            this.showSuccessMessage();
+
             this.renderCartDropdown(); // Ürün eklendiğinde dropdown'ı güncelle
         }
 
@@ -1069,13 +1067,7 @@
             }
         }
 
-        showSuccessMessage() {
-            const message = document.getElementById('successMessage');
-            message.classList.add('show');
-            setTimeout(() => {
-                message.classList.remove('show');
-            }, 3000);
-        }
+
     }
 
     // App State Management

@@ -820,7 +820,10 @@
             </div>
         </div>
         <span>Hoşgeldiniz</span>
-        <button class="auth-btn" onclick="window.location.href='/'">Çıkış Yap</button>
+        <form method="POST" action="{{ route('web.logout') }}" style="display: inline;">
+    @csrf
+    <button type="submit" class="auth-btn">Çıkış Yap</button>
+</form>
     </div>
 </header>
 
@@ -856,10 +859,9 @@
     <div class="pagination" id="pagination"></div>
 </section>
 
-<div class="success-message" id="successMessage">
-    Ürün sepete eklendi!
-</div>
 
+
+<script src="/js/basket-confirm.js"></script>
 <script>
     // Cart Management Class
     class CartManager {
@@ -924,7 +926,7 @@
             const currentQuantity = this.cart.get(productId) || 0;
             this.cart.set(productId, currentQuantity + quantity);
             this.updateBadge();
-            this.showSuccessMessage();
+
             this.renderCartDropdown(); // Ürün eklendiğinde dropdown'ı güncelle
         }
 
@@ -1056,27 +1058,67 @@
             dropdownBody.innerHTML = cartHTML;
         }
 
-        confirmOrder() {
+        async confirmOrder() {
             if (this.cart.size === 0) return;
 
             const total = this.getTotal();
             const itemCount = this.getTotalItems();
 
             if (confirm(`${itemCount} çeşit ürün, toplam ${total.toLocaleString('tr-TR', {style:'currency', currency:'TRY'})} tutarındaki siparişi onaylıyor musunuz?`)) {
-                // Burada gerçek bir API çağrısı yapılabilir
-                alert('Siparişiniz başarıyla alındı! Teşekkür ederiz.');
-                this.clearCart();
-                this.toggleCartDropdown(false); // Sipariş sonrası dropdown'ı kapat
+                
+                // Email'i otomatik al
+                const email = '{{ $userEmail ?? "test@example.com" }}';
+                console.log('Using email:', email);
+
+                // Sepet verilerini hazırla
+                const cartItems = Array.from(this.cart.entries());
+                const basketData = {
+                    items: cartItems.map(([productId, quantity]) => ({
+                        product_id: parseInt(productId),
+                        quantity: quantity
+                    })),
+                    total_price: total,
+                    email: email
+                };
+
+                console.log('Dashboard: Cart entries:', Array.from(this.cart.entries()));
+                console.log('Dashboard: Cart items for API:', cartItems);
+                console.log('Dashboard: Basket data:', basketData);
+
+                try {
+                    // API çağrısı yap
+                    const response = await fetch('/api/v1/basket/confirm', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(basketData)
+                    });
+
+                    const result = await response.json();
+                    console.log('Dashboard: API response:', result);
+
+                    if (result.success) {
+                        // Sepet onaylandı, checkout sayfasına yönlendir
+                        window.location.href = '/checkout?basket_id=' + result.basket.id;
+                    } else {
+                        alert('Hata: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Dashboard: API error:', error);
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
+                }
             }
         }
 
-        showSuccessMessage() {
-            const message = document.getElementById('successMessage');
-            message.classList.add('show');
-            setTimeout(() => {
-                message.classList.remove('show');
-            }, 3000);
+        isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
         }
+
+
     }
 
     // App State Management
@@ -1388,6 +1430,11 @@
     // Global instances
     const cartManager = new CartManager();
     const app = new TechShopApp();
+    
+    // BasketManager'ı da ekle (eğer gerekirse)
+    if (typeof BasketManager !== 'undefined') {
+        window.basketManager = new BasketManager();
+    }
 
     // Global functions for HTML onclick events
     function toggleCart() {

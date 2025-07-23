@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Logs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Email Logs ve Queue Durumu</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Email Log Dosyası</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Email log dosyasını kontrol etmek için:</p>
+                        <code>docker exec -it laravel_app cat storage/logs/laravel.log | grep -i email</code>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Queue Worker Durumu</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Queue worker'ı kontrol etmek için:</p>
+                        <code>docker exec -it laravel_app php artisan queue:work --once</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h3>Email Test Sonuçları:</h3>
+            <ul>
+                <li>✅ Basket verisi kaydediliyor</li>
+                <li>✅ Queue worker çalışıyor</li>
+                <li>❓ Email gönderimi log dosyasında kontrol edilmeli</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 
