@@ -224,14 +224,21 @@
         }
 
         .copy {
-            background: #6b7280;
-            color: #fff;
-            font-size: 14px;
+            background: transparent;
+            color: #60a5fa;
+            font-size: 13px;
             margin-top: 1em;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5em 0;
+            width: 100%;
         }
 
         .copy:hover {
-            background: #4b5563;
+            text-decoration: underline;
+            color: #3b82f6;
         }
 
         .btn {
@@ -344,13 +351,16 @@
         <button class="tab" id="registerMode">Üye Ol</button>
     </div>
 
-    <form id="form">
-        @csrf
+    <form id="form" novalidate>
         <div class="input-wrapper">
-            <input type="email" id="email" placeholder="E-posta" required>
+            <input type="email" id="email" placeholder="E-posta" required 
+                   oninvalid="this.setCustomValidity('Lütfen geçerli bir e-posta adresi girin')">
+            <div id="email-format-error" style="display:none;color:#dc2626;font-style:italic;font-size:13px;margin-top:4px;">Mail formatı hatalı</div>
         </div>
         <div class="input-wrapper" id="passWrap">
-            <input type="password" id="password" class="password-input" placeholder="Şifre" required>
+            <input type="password" id="password" class="password-input" placeholder="Şifre" required
+                   oninvalid="this.setCustomValidity('Şifre gereklidir')"
+                   oninput="this.setCustomValidity('')">
             <button type="button" class="eye-button" id="togglePass">
                 <svg class="eye-icon" id="eyeIcon" viewBox="0 0 24 24">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -372,12 +382,11 @@
     <div id="passBox" class="hidden">
         <p><strong>Şifreniz:</strong></p>
         <div id="generated"></div>
-        <button class="btn copy" id="copy">Şifreyi Kopyala</button>
+        <button class="copy" id="copy">Şifreyi Kopyala</button>
     </div>
 </div>
 
 <script>
-    const csrf = document.querySelector('[name="csrf-token"]').content;
     const loginMode = document.getElementById('loginMode');
     const registerMode = document.getElementById('registerMode');
     const email = document.getElementById('email');
@@ -446,10 +455,15 @@
 
     form.onsubmit = e => {
         e.preventDefault();
+        if (!validateEmail(email)) return;
         isLogin ? login() : register();
     };
 
-    registerBtn.onclick = register;
+    // Register butonuna tıklanınca da email formatı kontrolü yap
+    registerBtn.onclick = function() {
+        if (!validateEmail(email)) return;
+        register();
+    };
 
     async function login() {
         showSpinner(loginBtn, loginBtnText, true);
@@ -461,7 +475,7 @@
             const res = await fetch('/ajax/login', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrf,
+                    'X-CSRF-TOKEN': document.querySelector('[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
                 body: formData
@@ -496,7 +510,7 @@
             const res = await fetch('/ajax/register', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrf,
+                    'X-CSRF-TOKEN': document.querySelector('[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
                 body: formData
@@ -533,13 +547,42 @@
 
     function showSpinner(button, textElement, show) {
         if (show) {
-            textElement.innerHTML = '<span class="spinner"></span>Yükleniyor...';
+            textElement.innerHTML = '<span class="spinner"></span>';
             button.disabled = true;
         } else {
             textElement.textContent = isLogin ? 'Giriş Yap' : 'Üye Ol';
             button.disabled = false;
         }
     }
+    
+    function validateEmail(input) {
+        const email = input.value;
+        // Sadece a@b.c gibi formatları kabul eden regex
+        const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        const errorDiv = document.getElementById('email-format-error');
+        
+        if (!email) {
+            input.setCustomValidity('E-posta gerekli');
+            if (errorDiv) errorDiv.style.display = 'none';
+            return false;
+        }
+        if (!emailRegex.test(email)) {
+            input.setCustomValidity('Mail formatı hatalı');
+            if (errorDiv && !isLogin) errorDiv.style.display = 'block';
+            return false;
+        } else {
+            input.setCustomValidity('');
+            if (errorDiv) errorDiv.style.display = 'none';
+            return true;
+        }
+    }
+
+    // Register tab'a geçince hata mesajını gizle
+    registerMode.onclick = () => {
+        toggleMode(false);
+        const errorDiv = document.getElementById('email-format-error');
+        if (errorDiv) errorDiv.style.display = 'none';
+    };
 </script>
 </body>
 </html>

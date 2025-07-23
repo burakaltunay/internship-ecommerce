@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Sipariş Onayı</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .checkout-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .step-indicator { display: flex; justify-content: center; margin-bottom: 30px; }
+        .step { 
+            display: flex; align-items: center; margin: 0 15px; 
+            padding: 10px 20px; border-radius: 25px; background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .step.active { background: #007bff; color: white; }
+        .step.completed { background: #28a745; color: white; }
+        .step-number { 
+            width: 30px; height: 30px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 10px; font-weight: bold;
+        }
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+        .cart-item { border: 1px solid #eee; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .form-section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .btn-navigation { margin: 10px; }
+        .credit-card-form { max-width: 400px; margin: 0 auto; }
+        .card-preview { 
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px; border-radius: 10px; margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <h1 class="text-center mb-4">Sipariş Onayı</h1>
+        
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active" id="step-1">
+                <div class="step-number">1</div>
+                <span>Sepeti Görüntüle</span>
+            </div>
+            <div class="step" id="step-2">
+                <div class="step-number">2</div>
+                <span>Kargo Bilgileri</span>
+            </div>
+            <div class="step" id="step-3">
+                <div class="step-number">3</div>
+                <span>Ödeme</span>
+            </div>
+        </div>
+        
+        <!-- Step 1: Basket View -->
+        <div class="step-content active" id="step-content-1">
+            <div class="form-section">
+                <h3>Sepet İçeriği</h3>
+                <div id="basket-items">
+                    <!-- Basket items will be loaded here -->
+                </div>
+                <div class="text-end">
+                    <h5>Toplam: <span id="basket-total">0.00 TL</span></h5>
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary btn-navigation" onclick="nextStep()">Devam Et</button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Shipping Info -->
+        <div class="step-content" id="step-content-2">
+            <div class="form-section">
+                <h3>Kargo Bilgileri</h3>
+                <form id="shipping-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="full-name" class="form-label">Ad Soyad *</label>
+                                <input type="text" class="form-control" id="full-name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Telefon *</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Adres *</label>
+                        <textarea class="form-control" id="address" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="city" class="form-label">Şehir *</label>
+                                <input type="text" class="form-control" id="city" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="district" class="form-label">İlçe *</label>
+                                <input type="text" class="form-control" id="district" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="postal-code" class="form-label">Posta Kodu</label>
+                                <input type="text" class="form-control" id="postal-code">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-secondary btn-navigation" onclick="prevStep()">Geri</button>
+                <button class="btn btn-primary btn-navigation" onclick="nextStep()">Devam Et</button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Payment -->
+        <div class="step-content" id="step-content-3">
+            <div class="form-section">
+                <h3>Ödeme Bilgileri</h3>
+                <div class="credit-card-form">
+                    <div class="card-preview">
+                        <div class="row">
+                            <div class="col-8">
+                                <h6>Kart Numarası</h6>
+                                <p id="card-number-preview">**** **** **** ****</p>
+                            </div>
+                            <div class="col-4 text-end">
+                                <h6>CVV</h6>
+                                <p id="cvv-preview">***</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <h6>Kart Sahibi</h6>
+                                <p id="card-holder-preview">AD SOYAD</p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <h6>Son Kullanma</h6>
+                                <p id="expiry-preview">MM/YY</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form id="payment-form">
+                        <div class="mb-3">
+                            <label for="card-number" class="form-label">Kart Numarası *</label>
+                            <input type="text" class="form-control" id="card-number" 
+                                   placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="card-holder" class="form-label">Kart Sahibi *</label>
+                                    <input type="text" class="form-control" id="card-holder" 
+                                           placeholder="AD SOYAD" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="expiry" class="form-label">Son Kullanma *</label>
+                                    <input type="text" class="form-control" id="expiry" 
+                                           placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="cvv" class="form-label">CVV *</label>
+                                    <input type="text" class="form-control" id="cvv" 
+                                           placeholder="123" maxlength="3" required>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-secondary btn-navigation" onclick="prevStep()">Geri</button>
+                <button class="btn btn-success btn-navigation" onclick="completeOrder()">Siparişi Tamamla</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let basketData = null;
+        
+        // URL'den basket ID'yi al
+        const urlParams = new URLSearchParams(window.location.search);
+        const basketId = urlParams.get('basket_id');
+        
+        // Sayfa yüklendiğinde basket verilerini al
+        document.addEventListener('DOMContentLoaded', function() {
+            if (basketId) {
+                loadBasketData(basketId);
+            } else {
+                alert('Basket ID bulunamadı!');
+                window.location.href = '/dashboard';
+            }
+        });
+        
+        async function loadBasketData(basketId) {
+            try {
+                const response = await fetch(`/api/v1/basket/${basketId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    basketData = data.basket;
+                    displayBasketItems(basketData);
+                } else {
+                    alert('Basket verileri yüklenemedi!');
+                    window.location.href = '/dashboard';
+                }
+            } catch (error) {
+                console.error('Basket yükleme hatası:', error);
+                alert('Basket verileri yüklenemedi!');
+                window.location.href = '/dashboard';
+            }
+        }
+        
+        function displayBasketItems(basket) {
+            const container = document.getElementById('basket-items');
+            const totalElement = document.getElementById('basket-total');
+            
+            container.innerHTML = basket.items.map(item => `
+                <div class="cart-item">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Ürün ID: ${item.product_id}</h6>
+                            <p class="text-muted">Ürün adı burada görünecek</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p>Adet: ${item.quantity}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="fw-bold">${(item.quantity * 50).toFixed(2)} TL</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            totalElement.textContent = basket.total_price.toFixed(2) + ' TL';
+        }
+        
+        function nextStep() {
+            if (currentStep === 1) {
+                // Step 1 validation
+                if (!basketData || basketData.items.length === 0) {
+                    alert('Sepet boş!');
+                    return;
+                }
+            } else if (currentStep === 2) {
+                // Step 2 validation
+                const form = document.getElementById('shipping-form');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+            }
+            
+            if (currentStep < 3) {
+                currentStep++;
+                updateStepDisplay();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+        
+        function updateStepDisplay() {
+            // Step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // Step content
+            document.querySelectorAll('.step-content').forEach((content, index) => {
+                content.classList.remove('active');
+                if (index + 1 === currentStep) {
+                    content.classList.add('active');
+                }
+            });
+        }
+        
+        // Credit card preview
+        document.getElementById('card-number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = value;
+            document.getElementById('card-number-preview').textContent = value || '**** **** **** ****';
+        });
+        
+        document.getElementById('card-holder').addEventListener('input', function(e) {
+            const value = e.target.value.toUpperCase();
+            document.getElementById('card-holder-preview').textContent = value || 'AD SOYAD';
+        });
+        
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+            document.getElementById('expiry-preview').textContent = value || 'MM/YY';
+        });
+        
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            const value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+            document.getElementById('cvv-preview').textContent = value || '***';
+        });
+        
+        async function completeOrder() {
+            // Payment validation
+            const form = document.getElementById('payment-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Shipping info
+            const shippingInfo = {
+                full_name: document.getElementById('full-name').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                district: document.getElementById('district').value,
+                postal_code: document.getElementById('postal-code').value
+            };
+            
+            // Payment info
+            const paymentInfo = {
+                card_number: document.getElementById('card-number').value,
+                card_holder: document.getElementById('card-holder').value,
+                expiry: document.getElementById('expiry').value,
+                cvv: document.getElementById('cvv').value
+            };
+            
+            try {
+                // Burada gerçek ödeme işlemi yapılacak
+                console.log('Shipping info:', shippingInfo);
+                console.log('Payment info:', paymentInfo);
+                
+                // Simüle edilmiş ödeme işlemi
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                alert('Siparişiniz başarıyla tamamlandı! Email adresinizi kontrol edin.');
+                window.location.href = '/dashboard';
+                
+            } catch (error) {
+                console.error('Ödeme hatası:', error);
+                alert('Ödeme işlemi başarısız! Lütfen tekrar deneyin.');
+            }
+        }
+    </script>
+</body>
+</html> 
