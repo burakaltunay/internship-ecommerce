@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>TechShop - Siparişiniz Onaylandı</title>
+    <title>TechShop - İndirim Kodunuz</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,15 +24,17 @@
             padding: 30px;
             border-radius: 0 0 10px 10px;
         }
-        .status-box {
-            background: #d4edda;
-            border: 2px solid #28a745;
+        .discount-box {
+            background: #fff;
+            border: 3px dashed #28a745;
             border-radius: 8px;
-            padding: 20px;
+            padding: 25px;
             margin: 20px 0;
             text-align: center;
-            font-size: 18px;
-            color: #155724;
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+            letter-spacing: 2px;
         }
         .footer {
             text-align: center;
@@ -49,9 +51,9 @@
             border-radius: 5px;
             margin: 20px 0;
         }
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #b3d9ff;
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
             border-radius: 5px;
             padding: 15px;
             margin: 15px 0;
@@ -60,45 +62,42 @@
 </head>
 <body>
     <div class="header">
-        <h1>✅ Siparişiniz Onaylandı</h1>
-        <p>Sayın {{ $basket->email }}</p>
+        <h1>🎉 Tebrikler! İndirim Kodunuz Hazır</h1>
+        <p>5. siparişinizi tamamladınız</p>
     </div>
     
     <div class="content">
-        <h2>Harika! 🎉</h2>
-        <p>Siparişiniz başarıyla onaylandı ve hazırlanmaya başlandı.</p>
+        <h2>Merhaba!</h2>
+        <p>5. siparişinizi başarıyla tamamladığınız için size özel bir indirim kodu kazandınız!</p>
         
-        <div class="status-box">
-            <strong>✅ Sipariş Durumu: Onaylandı</strong>
+        <div class="discount-box">
+            {{ $code }}
         </div>
         
-        <div class="info-box">
-            <p><strong>📋 Sipariş Detayları:</strong></p>
+        <div class="highlight">
+            <p><strong>🎯 Bu kod ile:</strong></p>
             <ul style="text-align: left; margin: 10px 0;">
-                <li>Sipariş tarihi: {{ $basket->created_at->format('d.m.Y H:i') }}</li>
-                <li>Sipariş durumu: Onaylandı</li>
-                <li>Sonraki adım: Hazırlanıyor</li>
+                <li>Toplam tutar üzerinden <strong>%20 indirim</strong> kazanabilirsiniz</li>
+                <li>Sepet onaylama sayfasında kullanabilirsiniz</li>
+                <li>Tek kullanımlık bir koddur</li>
             </ul>
         </div>
         
-        <p><strong>📦 Sonraki Adımlar:</strong></p>
+        <p><strong>Nasıl kullanılır?</strong></p>
         <ol style="text-align: left;">
-            <li>Siparişiniz hazırlanıyor</li>
-            <li>Kargo firmasına teslim edilecek</li>
-            <li>Kargo takip numarası size iletilecek</li>
-            <li>Siparişiniz adresinize teslim edilecek</li>
+            <li>Sepetinizi oluşturun</li>
+            <li>Onaylama sayfasına gidin</li>
+            <li>İndirim kodu alanına yukarıdaki kodu yazın</li>
+            <li>İndiriminizi görün!</li>
         </ol>
         
-        <p><strong>📞 Sorularınız için:</strong></p>
-        <p>Herhangi bir sorunuz olursa müşteri hizmetlerimizle iletişime geçebilirsiniz.</p>
-        
         <div style="text-align: center;">
-            <a href="{{ url('/orders') }}" class="btn">Siparişlerimi Görüntüle</a>
+            <a href="{{ url('/dashboard') }}" class="btn">Alışverişe Başla</a>
         </div>
         
         <div class="footer">
             <p>Bu email TechShop tarafından gönderilmiştir.</p>
-            <p>Teşekkür ederiz! 🙏</p>
+            <p>İyi alışverişler! 🛒</p>
         </div>
     </div>
 </body>

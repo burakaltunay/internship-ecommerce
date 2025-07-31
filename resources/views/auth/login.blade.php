@@ -354,17 +354,18 @@
     <form id="form" novalidate>
         <div class="input-wrapper">
             <input type="email" id="email" placeholder="E-posta" required 
-                   oninvalid="this.setCustomValidity('Lütfen geçerli bir e-posta adresi girin')">
+                   pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                   oninvalid="this.setCustomValidity('Lütfen geçerli bir e-posta adresi girin')"
+                   oninput="this.setCustomValidity('')">
             <div id="email-format-error" style="display:none;color:#dc2626;font-style:italic;font-size:13px;margin-top:4px;">Mail formatı hatalı</div>
         </div>
-        <div class="input-wrapper" id="passWrap">
-            <input type="password" id="password" class="password-input" placeholder="Şifre" required
-                   oninvalid="this.setCustomValidity('Şifre gereklidir')"
-                   oninput="this.setCustomValidity('')">
+        
+        <div class="input-wrapper" id="passwordWrapper">
+            <input type="password" id="password" class="password-input" placeholder="Şifre" required>
             <button type="button" class="eye-button" id="togglePass">
                 <svg class="eye-icon" id="eyeIcon" viewBox="0 0 24 24">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
                 </svg>
             </button>
         </div>
@@ -379,11 +380,7 @@
         </button>
     </form>
 
-    <div id="passBox" class="hidden">
-        <p><strong>Şifreniz:</strong></p>
-        <div id="generated"></div>
-        <button class="copy" id="copy">Şifreyi Kopyala</button>
-    </div>
+
 </div>
 
 <script>
@@ -391,67 +388,50 @@
     const registerMode = document.getElementById('registerMode');
     const email = document.getElementById('email');
     const password = document.getElementById('password');
-    const form = document.getElementById('form');
     const togglePass = document.getElementById('togglePass');
     const eyeIcon = document.getElementById('eyeIcon');
-    const passWrap = document.getElementById('passWrap');
+    const passWrap = document.getElementById('passwordWrapper');
+    const form = document.getElementById('form');
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
     const loginBtnText = document.getElementById('loginBtnText');
     const registerBtnText = document.getElementById('registerBtnText');
     const alertBox = document.getElementById('alert');
-    const passBox = document.getElementById('passBox');
-    const generated = document.getElementById('generated');
-    const copy = document.getElementById('copy');
 
     let isLogin = true;
 
     loginMode.onclick = () => toggleMode(true);
     registerMode.onclick = () => toggleMode(false);
 
+    // Password toggle
+    togglePass.onclick = () => {
+        if (password.type === 'password') {
+            password.type = 'text';
+            eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+        } else {
+            password.type = 'password';
+            eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        }
+    };
+
     function toggleMode(state) {
         isLogin = state;
         loginMode.classList.toggle('active', state);
         registerMode.classList.toggle('active', !state);
-        passWrap.classList.toggle('hidden', !state);
         loginBtn.classList.toggle('hidden', !state);
         registerBtn.classList.toggle('hidden', state);
-        password.required = state;
-        passBox.classList.add('hidden');
         alertBox.innerHTML = '';
+
+        // Password field'ını göster/gizle
+        passWrap.style.display = state ? 'block' : 'none';
+        password.required = state;
 
         // Inputları temizle
         email.value = '';
         password.value = '';
-        password.type = 'password';
-
-        // Göz ikonunu sıfırla
-        eyeIcon.innerHTML = `
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-        `;
     }
 
-    togglePass.onclick = () => {
-        const isPassword = password.type === 'password';
-        password.type = isPassword ? 'text' : 'password';
 
-        // SVG ikonunu değiştir
-        if (isPassword) {
-            // Göz kapalı ikonu (şifre görünür)
-            eyeIcon.innerHTML = `
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94l9.88 9.88z"></path>
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19l-6.93-6.93a2.99 2.99 0 0 0-4.17-4.17z"></path>
-                <line x1="1" y1="1" x2="23" y2="23"></line>
-            `;
-        } else {
-            // Göz açık ikonu (şifre gizli)
-            eyeIcon.innerHTML = `
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-            `;
-        }
-    };
 
     form.onsubmit = e => {
         e.preventDefault();
@@ -466,6 +446,8 @@
     };
 
     async function login() {
+        if (!password.value) return notify('Şifre gerekli', 'error');
+        
         showSpinner(loginBtn, loginBtnText, true);
         try {
             const formData = new FormData();
@@ -520,10 +502,6 @@
 
             if (res.ok && data.success) {
                 notify(data.message, 'success');
-                if (data.password) {
-                    generated.textContent = data.password;
-                    passBox.classList.remove('hidden');
-                }
             } else {
                 notify(data.message || 'Kayıt başarısız', 'error');
             }
@@ -535,11 +513,7 @@
         }
     }
 
-    copy.onclick = () => {
-        navigator.clipboard.writeText(generated.textContent);
-        copy.textContent = 'Kopyalandı!';
-        setTimeout(() => copy.textContent = 'Şifreyi Kopyala', 2000);
-    };
+
 
     function notify(msg, type) {
         alertBox.innerHTML = `<div class="alert ${type}">${msg}</div>`;
@@ -558,7 +532,7 @@
     function validateEmail(input) {
         const email = input.value;
         // Sadece a@b.c gibi formatları kabul eden regex
-        const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const errorDiv = document.getElementById('email-format-error');
         
         if (!email) {

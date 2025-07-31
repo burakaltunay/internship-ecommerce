@@ -25,4 +25,12 @@ class Basket extends Model
         'is_approved' => 'integer',
         'is_delivered' => 'integer'
     ];
+
+    /**
+     * Bu sepette kullanılan indirim kodları
+     */
+    public function discountCodes()
+    {
+        return $this->hasMany(DiscountCode::class);
+    }
 } 

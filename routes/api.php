@@ -28,6 +28,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/basket/confirm', [BasketController::class, 'confirm'])->name('api.basket.confirm');
     Route::get('/basket/{id}', [BasketController::class, 'show'])->name('api.basket.show');
     Route::post('/basket/{id}/pay', [BasketController::class, 'simulatePayment']);
+    Route::patch('/basket/{id}/update-total', [\App\Http\Controllers\BasketController::class, 'updateTotal']);
+
+    // İndirim kodu doğrulama
+    Route::post('/discount/validate', [\App\Http\Controllers\DiscountCodeController::class, 'validateCode']);
 
     // Protected Routes (Sanctum + custom middleware)
     Route::middleware(['auth:sanctum', 'auth.token'])->group(function () {
@@ -46,6 +50,9 @@ Route::prefix('v1')->group(function () {
             Route::delete('/', [CartController::class, 'clear'])->name('api.cart.clear');
             Route::post('/checkout', [CartController::class, 'checkout'])->name('api.cart.checkout');
         });
+
+        // 📦 Orders Routes
+        Route::get('/orders', [BasketController::class, 'myOrders'])->name('api.orders.index');
     });
 
     // Fallback (404 handler)

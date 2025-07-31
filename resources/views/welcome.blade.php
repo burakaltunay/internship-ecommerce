@@ -105,6 +105,25 @@
             height: 24px;
         }
 
+        .orders-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 50%;
+            transition: var(--transition);
+            color: var(--primary-color);
+        }
+
+        .orders-icon:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .orders-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
         .cart-badge {
             position: absolute;
             top: 5px;
@@ -124,15 +143,18 @@
 
         /* Yeni Sepet Dropdown Stilleri */
         .cart-dropdown {
-            position: absolute;
-            top: calc(100% + 10px); /* İkonun altından 10px boşluk bırak */
-            right: 0;
+            position: fixed;
+            top: 80px;
+            right: 5vw;
             background: white;
-            border-radius: 12px;
-            width: 350px; /* Genişlik ayarı */
-            max-height: 80vh;
-            overflow-y: auto;
-            overflow-x: hidden; /* **Yatay çubuğu kaldırmak için eklendi** */
+            border-radius: 16px;
+            width: 500px;
+            max-width: 90vw;
+            height: 55vh;
+            min-height: 300px;
+            max-height: 55vh;
+            display: flex;
+            flex-direction: column;
             box-shadow: var(--shadow-heavy);
             z-index: 1100;
             opacity: 0;
@@ -140,20 +162,39 @@
             transform: translateY(-10px);
             transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
             border: 1px solid var(--border-color);
+            margin-top: 0;
         }
-
         .cart-dropdown.active {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
-
         .dropdown-header {
-            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 2;
+            padding: 0 20px 0 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        .dropdown-body {
+            flex: 1 1 auto;
+            overflow-y: auto;
+            padding: 20px;
+            min-height: 0;
+        }
+        .cart-total {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 2px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 0;
+            text-align: center;
+            z-index: 2;
         }
 
         .dropdown-title {
@@ -819,15 +860,23 @@
                 </div>
             </div>
         </div>
+        <button class="orders-icon" onclick="window.location.href='{{ route('login') }}'" title="Siparişlerim (Giriş Yapın)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="32" height="32">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+        </button>
         <button class="auth-btn" onclick="window.location.href='{{ route('login') }}'">Giriş Yap / Üye Ol</button>
     </div>
 </header>
-
 
 <section class="hero">
     <h1>Teknolojinin Kalbi</h1>
     <p>Geleceğin teknolojisiyle bugün tanışın</p>
 </section>
+
+<div style="background: #fef3c7; color: #92400e; text-align: center; padding: 16px 0; font-size: 18px; font-weight: 600; border-bottom: 2px solid #fde68a;">
+    🎁 Her 5. siparişte bir indirim kodu kazanırsınız! Kazandığınız kodu sipariş onayı sayfasında kullanarak %20 indirim elde edebilirsiniz.
+</div>
 
 <section class="categories" id="categories">
 </section>
@@ -1059,12 +1108,96 @@
             const total = this.getTotal();
             const itemCount = this.getTotalItems();
 
-            if (confirm(`${itemCount} çeşit ürün, toplam ${total.toLocaleString('tr-TR', {style:'currency', currency:'TRY'})} tutarındaki siparişi onaylıyor musunuz?`)) {
-                // Burada gerçek bir API çağrısı yapılabilir
-                alert('Siparişiniz başarıyla alındı! Teşekkür ederiz.');
-                this.clearCart();
-                this.toggleCartDropdown(false); // Sipariş sonrası dropdown'ı kapat
+            // Modal'ı göster
+            this.showOrderConfirmModal(itemCount, total);
+        }
+
+        showOrderConfirmModal(itemCount, total) {
+            // Modal HTML'ini oluştur
+            const modalHTML = `
+                <div class="modal-overlay" id="orderConfirmModal" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                ">
+                    <div class="modal-content" style="
+                        background: white;
+                        padding: 30px;
+                        border-radius: 15px;
+                        max-width: 500px;
+                        width: 90%;
+                        text-align: center;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    ">
+                        <h3 style="margin-bottom: 20px; color: #333;">Sipariş Onayı</h3>
+                        <p style="margin-bottom: 25px; font-size: 16px; line-height: 1.5;">
+                            ${itemCount} çeşit ürün, toplam <strong>${total.toLocaleString('tr-TR', {style:'currency', currency:'TRY'})}</strong> tutarındaki siparişi onaylıyor musunuz?
+                        </p>
+                        <div style="display: flex; gap: 15px; justify-content: center;">
+                            <button id="cancelOrderBtn" style="
+                                padding: 12px 24px;
+                                border: 1px solid #ddd;
+                                background: white;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                transition: all 0.3s ease;
+                            ">Vazgeç</button>
+                            <button id="confirmOrderBtn" style="
+                                padding: 12px 24px;
+                                background: #2563eb;
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                transition: all 0.3s ease;
+                            ">Onayla</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Modal'ı sayfaya ekle
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Event listener'ları ekle
+            document.getElementById('cancelOrderBtn').addEventListener('click', () => {
+                this.closeOrderConfirmModal();
+            });
+
+            document.getElementById('confirmOrderBtn').addEventListener('click', () => {
+                this.closeOrderConfirmModal();
+                this.processOrder();
+            });
+
+            // Modal dışına tıklayınca kapat
+            document.getElementById('orderConfirmModal').addEventListener('click', (e) => {
+                if (e.target.id === 'orderConfirmModal') {
+                    this.closeOrderConfirmModal();
+                }
+            });
+        }
+
+        closeOrderConfirmModal() {
+            const modal = document.getElementById('orderConfirmModal');
+            if (modal) {
+                modal.remove();
             }
+        }
+
+        processOrder() {
+            // Burada gerçek bir API çağrısı yapılabilir
+            alert('Siparişiniz başarıyla alındı! Teşekkür ederiz.');
+            this.clearCart();
+            this.toggleCartDropdown(false); // Sipariş sonrası dropdown'ı kapat
         }
 
 
