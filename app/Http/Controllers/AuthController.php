@@ -27,27 +27,39 @@ class AuthController extends Controller
     // Handles web login requests (form submission).
     public function webLogin(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required'
         ]);
 
-        // Attempts to log in the user with provided credentials, including "remember me".
-        if (Auth::attempt($credentials, true)) {
-            $request->session()->regenerate();
-            
-            // Generate and save authentication token
-            $user = Auth::user();
-            $token = Str::random(60);
-            $user->update(['auth_token' => $token]);
-            
-            return redirect('/');
+        $email = $request->email;
+        $password = $request->password;
+
+        // Checks if a user with the given email exists.
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Bu email adresi ile kayıtlı kullanıcı bulunamadı. Lütfen üye olun.',
+            ])->onlyInput('email');
         }
 
-        // Returns with an error if authentication fails.
-        return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ])->onlyInput('email');
+        // Attempts to authenticate the user with the provided credentials.
+        if (!Auth::attempt(['email' => $email, 'password' => $password])) {
+            return back()->withErrors([
+                'password' => 'Geçersiz şifre!',
+            ])->onlyInput('email');
+        }
+
+        // Logs in the user via Laravel's authentication system.
+        Auth::login($user);
+        $request->session()->regenerate();
+        
+        // Generate and save authentication token
+        $token = Str::random(60);
+        $user->update(['auth_token' => $token]);
+        
+        return redirect('/dashboard')->with('status', 'Giriş başarılı!');
     }
 
     // Handles web registration requests (form submission).
@@ -68,10 +80,16 @@ class AuthController extends Controller
             'password' => Hash::make($password),
         ]);
 
-        // Redirects to login with the generated password and a success message.
+        // Send password via email
+        try {
+            \Mail::to($request->email)->send(new \App\Mail\WelcomePasswordMail($password));
+        } catch (\Exception $e) {
+            \Log::error('Web registration password email failed', ['error' => $e->getMessage(), 'email' => $request->email]);
+        }
+
+        // Redirects to login with a success message.
         return redirect()->route('login')
-            ->with('generated_password', $password)
-            ->with('status', 'Registration successful! Your password: '.$password);
+            ->with('status', 'Kayıt başarılı! Şifreniz email adresinize gönderildi.');
     }
 
     // Handles web logout requests.
@@ -110,15 +128,15 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No user found with this email. Please register.'
+                    'message' => 'Bu email adresi ile kayıtlı kullanıcı bulunamadı. Lütfen üye olun.'
                 ], 404);
             }
 
-            // Checks if the provided password is correct.
-            if (!Hash::check($password, $user->password)) {
+            // Attempts to authenticate the user with the provided credentials.
+            if (!Auth::attempt(['email' => $email, 'password' => $password])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Incorrect password!'
+                    'message' => 'Geçersiz şifre!'
                 ], 401);
             }
 
@@ -127,22 +145,22 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Login successful!',
-                'redirect' => '/dashboard' // Redirects to the dashboard on success.
+                'message' => 'Giriş başarılı!',
+                'redirect' => '/dashboard'
             ]);
 
         } catch (ValidationException $e) {
             // Handles validation errors.
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid data input.',
+                'message' => 'Geçersiz email formatı.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred: ' . $e->getMessage()
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -165,7 +183,7 @@ class AuthController extends Controller
             if ($existingUser) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'This email address is already registered!'
+                    'message' => 'Bu email adresi zaten kayıtlı!'
                 ], 400);
             }
 
@@ -178,24 +196,30 @@ class AuthController extends Controller
                 'password' => Hash::make($password)
             ]);
 
+            // Send password via email
+            try {
+                \Mail::to($email)->send(new \App\Mail\WelcomePasswordMail($password));
+            } catch (\Exception $e) {
+                \Log::error('Registration password email failed', ['error' => $e->getMessage(), 'email' => $email]);
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Şifreniz oluşturuldu, lütfen kopyalayın.',
-                'password' => $password
+                'message' => 'Kayıt başarılı! Şifreniz email adresinize gönderildi.'
             ]);
 
         } catch (ValidationException $e) {
             // Handles validation errors.
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid data input.',
+                'message' => 'Geçersiz email formatı.',
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
             // Handles general exceptions.
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred: ' . $e->getMessage()
+                'message' => 'Bir hata oluştu: ' . $e->getMessage()
             ], 500);
         }
     }

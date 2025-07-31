@@ -21,6 +21,8 @@ Route::get('/', function () {
 
 
 
+
+
 // Auth Routes - Public (Form-based)
 
 // Direct routes (Laravel standartları)
@@ -65,6 +67,9 @@ Route::get('/dashboard', function () {
 Route::get('/checkout', function () {
     return view('checkout');
 })->name('checkout');
+
+// Siparişlerim sayfası
+Route::get('/orders', [\App\Http\Controllers\BasketController::class, 'myOrdersWeb'])->name('orders');
 
 // Logout
     Route::post('/logout', [AuthController::class, 'webLogout'])->name('web.logout');
