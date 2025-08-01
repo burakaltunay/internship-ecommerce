@@ -9,7 +9,6 @@ A modern e-commerce platform built with Laravel, featuring user authentication, 
 - **Shopping Cart**: Add/remove products, quantity management
 - **Order Processing**: Complete order workflow with status tracking
 - **Email Notifications**: Beautiful HTML email templates for various events
-- **Admin Panel**: Manage orders, products, and user accounts
 - **Responsive Design**: Modern UI with Tailwind CSS
 - **Discount System**: Automatic discount codes for loyal customers
 
@@ -73,7 +72,7 @@ MAIL_PORT=2525
 MAIL_USERNAME=your_username
 MAIL_PASSWORD=your_password
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS="noreply@techshop.com"
+MAIL_FROM_ADDRESS="your_mail"
 MAIL_FROM_NAME="TechShop"
 ```
 
@@ -271,15 +270,6 @@ techshop-ecommerce/
 └── tests/                   # Test files
 ```
 
-## 🔐 Security Features
-
-- CSRF protection enabled
-- SQL injection prevention with Eloquent ORM
-- XSS protection with Blade templating
-- Password hashing with bcrypt
-- Authentication middleware
-- Input validation and sanitization
-
 ## 🎨 Frontend Features
 
 - **Tailwind CSS**: Utility-first CSS framework
@@ -341,31 +331,6 @@ techshop-ecommerce/
    - Enable HTTPS
    - Configure proper file permissions
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-If you encounter any issues or have questions:
-
-1. Check the [Issues](https://github.com/yourusername/techshop-ecommerce/issues) page
-2. Create a new issue with detailed information
-3. Contact the development team
-
-## 🙏 Acknowledgments
-
-- Laravel framework and community
-- Tailwind CSS team
-- All contributors and testers
 
 ---
 
